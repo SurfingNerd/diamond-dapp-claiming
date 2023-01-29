@@ -1,0 +1,694 @@
+[
+    {
+        "type": "constructor",
+        "stateMutability": "nonpayable",
+        "inputs": [
+            {
+                "type": "address",
+                "name": "_lateClaimBeneficorAddressReinsertPot",
+                "internalType": "address payable"
+            },
+            {
+                "type": "address",
+                "name": "_lateClaimBeneficorAddressDAO",
+                "internalType": "address payable"
+            },
+            {
+                "type": "bytes",
+                "name": "_prefixStr",
+                "internalType": "bytes"
+            }
+        ]
+    },
+    {
+        "type": "event",
+        "name": "Claim",
+        "inputs": [
+            {
+                "type": "bytes20",
+                "name": "_from",
+                "internalType": "bytes20",
+                "indexed": true
+            },
+            {
+                "type": "address",
+                "name": "_to",
+                "internalType": "address",
+                "indexed": false
+            },
+            {
+                "type": "uint256",
+                "name": "amount",
+                "internalType": "uint256",
+                "indexed": false
+            },
+            {
+                "type": "uint256",
+                "name": "_nominator",
+                "internalType": "uint256",
+                "indexed": false
+            },
+            {
+                "type": "uint256",
+                "name": "_denominator",
+                "internalType": "uint256",
+                "indexed": false
+            }
+        ],
+        "anonymous": false
+    },
+    {
+        "type": "function",
+        "stateMutability": "view",
+        "outputs": [
+            {
+                "type": "uint256",
+                "name": "",
+                "internalType": "uint256"
+            }
+        ],
+        "name": "DAY_IN_SECONDS",
+        "inputs": []
+    },
+    {
+        "type": "function",
+        "stateMutability": "view",
+        "outputs": [
+            {
+                "type": "uint256",
+                "name": "",
+                "internalType": "uint256"
+            }
+        ],
+        "name": "LEAP_YEAR_IN_SECONDS",
+        "inputs": []
+    },
+    {
+        "type": "function",
+        "stateMutability": "view",
+        "outputs": [
+            {
+                "type": "uint256",
+                "name": "",
+                "internalType": "uint256"
+            }
+        ],
+        "name": "YEAR_IN_SECONDS",
+        "inputs": []
+    },
+    {
+        "type": "function",
+        "stateMutability": "payable",
+        "outputs": [],
+        "name": "addBalance",
+        "inputs": [
+            {
+                "type": "bytes20",
+                "name": "oldAddress",
+                "internalType": "bytes20"
+            }
+        ]
+    },
+    {
+        "type": "function",
+        "stateMutability": "view",
+        "outputs": [
+            {
+                "type": "uint256",
+                "name": "",
+                "internalType": "uint256"
+            }
+        ],
+        "name": "balances",
+        "inputs": [
+            {
+                "type": "bytes20",
+                "name": "",
+                "internalType": "bytes20"
+            }
+        ]
+    },
+    {
+        "type": "function",
+        "stateMutability": "pure",
+        "outputs": [
+            {
+                "type": "bytes32",
+                "name": "",
+                "internalType": "bytes32"
+            }
+        ],
+        "name": "calcHash256",
+        "inputs": [
+            {
+                "type": "bytes",
+                "name": "data",
+                "internalType": "bytes"
+            }
+        ]
+    },
+    {
+        "type": "function",
+        "stateMutability": "pure",
+        "outputs": [
+            {
+                "type": "bytes",
+                "name": "addrStr",
+                "internalType": "bytes"
+            }
+        ],
+        "name": "calculateAddressString",
+        "inputs": [
+            {
+                "type": "address",
+                "name": "_addr",
+                "internalType": "address"
+            },
+            {
+                "type": "bool",
+                "name": "_includeAddrChecksum",
+                "internalType": "bool"
+            }
+        ]
+    },
+    {
+        "type": "function",
+        "stateMutability": "nonpayable",
+        "outputs": [],
+        "name": "claim",
+        "inputs": [
+            {
+                "type": "address",
+                "name": "_targetAdress",
+                "internalType": "address payable"
+            },
+            {
+                "type": "bool",
+                "name": "_claimAddrChecksum",
+                "internalType": "bool"
+            },
+            {
+                "type": "bytes",
+                "name": "_postfix",
+                "internalType": "bytes"
+            },
+            {
+                "type": "bytes32",
+                "name": "_pubKeyX",
+                "internalType": "bytes32"
+            },
+            {
+                "type": "bytes32",
+                "name": "_pubKeyY",
+                "internalType": "bytes32"
+            },
+            {
+                "type": "uint8",
+                "name": "_v",
+                "internalType": "uint8"
+            },
+            {
+                "type": "bytes32",
+                "name": "_r",
+                "internalType": "bytes32"
+            },
+            {
+                "type": "bytes32",
+                "name": "_s",
+                "internalType": "bytes32"
+            }
+        ]
+    },
+    {
+        "type": "function",
+        "stateMutability": "view",
+        "outputs": [
+            {
+                "type": "bool",
+                "name": "",
+                "internalType": "bool"
+            }
+        ],
+        "name": "claimMessageMatchesSignature",
+        "inputs": [
+            {
+                "type": "address",
+                "name": "_claimToAddr",
+                "internalType": "address"
+            },
+            {
+                "type": "bool",
+                "name": "_claimAddrChecksum",
+                "internalType": "bool"
+            },
+            {
+                "type": "bytes",
+                "name": "_postFix",
+                "internalType": "bytes"
+            },
+            {
+                "type": "bytes32",
+                "name": "_pubKeyX",
+                "internalType": "bytes32"
+            },
+            {
+                "type": "bytes32",
+                "name": "_pubKeyY",
+                "internalType": "bytes32"
+            },
+            {
+                "type": "uint8",
+                "name": "_v",
+                "internalType": "uint8"
+            },
+            {
+                "type": "bytes32",
+                "name": "_r",
+                "internalType": "bytes32"
+            },
+            {
+                "type": "bytes32",
+                "name": "_s",
+                "internalType": "bytes32"
+            }
+        ]
+    },
+    {
+        "type": "function",
+        "stateMutability": "view",
+        "outputs": [
+            {
+                "type": "bytes",
+                "name": "",
+                "internalType": "bytes"
+            }
+        ],
+        "name": "createClaimMessage",
+        "inputs": [
+            {
+                "type": "address",
+                "name": "_claimToAddr",
+                "internalType": "address"
+            },
+            {
+                "type": "bool",
+                "name": "_claimAddrChecksum",
+                "internalType": "bool"
+            },
+            {
+                "type": "bytes",
+                "name": "_postfix",
+                "internalType": "bytes"
+            }
+        ]
+    },
+    {
+        "type": "function",
+        "stateMutability": "view",
+        "outputs": [
+            {
+                "type": "uint256",
+                "name": "",
+                "internalType": "uint256"
+            }
+        ],
+        "name": "deploymentTimestamp",
+        "inputs": []
+    },
+    {
+        "type": "function",
+        "stateMutability": "nonpayable",
+        "outputs": [
+            {
+                "type": "uint256",
+                "name": "",
+                "internalType": "uint256"
+            }
+        ],
+        "name": "dilute1",
+        "inputs": []
+    },
+    {
+        "type": "function",
+        "stateMutability": "nonpayable",
+        "outputs": [
+            {
+                "type": "uint256",
+                "name": "",
+                "internalType": "uint256"
+            }
+        ],
+        "name": "dilute2",
+        "inputs": []
+    },
+    {
+        "type": "function",
+        "stateMutability": "nonpayable",
+        "outputs": [
+            {
+                "type": "uint256",
+                "name": "",
+                "internalType": "uint256"
+            }
+        ],
+        "name": "dilute3",
+        "inputs": []
+    },
+    {
+        "type": "function",
+        "stateMutability": "view",
+        "outputs": [
+            {
+                "type": "bool",
+                "name": "",
+                "internalType": "bool"
+            }
+        ],
+        "name": "dilution_s1_75_executed",
+        "inputs": []
+    },
+    {
+        "type": "function",
+        "stateMutability": "view",
+        "outputs": [
+            {
+                "type": "bool",
+                "name": "",
+                "internalType": "bool"
+            }
+        ],
+        "name": "dilution_s2_50_executed",
+        "inputs": []
+    },
+    {
+        "type": "function",
+        "stateMutability": "view",
+        "outputs": [
+            {
+                "type": "bool",
+                "name": "",
+                "internalType": "bool"
+            }
+        ],
+        "name": "dilution_s3_0_executed",
+        "inputs": []
+    },
+    {
+        "type": "function",
+        "stateMutability": "payable",
+        "outputs": [],
+        "name": "fill",
+        "inputs": [
+            {
+                "type": "bytes20[]",
+                "name": "_accounts",
+                "internalType": "bytes20[]"
+            },
+            {
+                "type": "uint256[]",
+                "name": "_balances",
+                "internalType": "uint256[]"
+            }
+        ]
+    },
+    {
+        "type": "function",
+        "stateMutability": "view",
+        "outputs": [
+            {
+                "type": "uint256",
+                "name": "nominator",
+                "internalType": "uint256"
+            },
+            {
+                "type": "uint256",
+                "name": "denominator",
+                "internalType": "uint256"
+            }
+        ],
+        "name": "getCurrentDilutedClaimFactor",
+        "inputs": []
+    },
+    {
+        "type": "function",
+        "stateMutability": "view",
+        "outputs": [
+            {
+                "type": "uint256",
+                "name": "",
+                "internalType": "uint256"
+            }
+        ],
+        "name": "getDilutionTimestamp1",
+        "inputs": []
+    },
+    {
+        "type": "function",
+        "stateMutability": "view",
+        "outputs": [
+            {
+                "type": "uint256",
+                "name": "",
+                "internalType": "uint256"
+            }
+        ],
+        "name": "getDilutionTimestamp2",
+        "inputs": []
+    },
+    {
+        "type": "function",
+        "stateMutability": "view",
+        "outputs": [
+            {
+                "type": "uint256",
+                "name": "",
+                "internalType": "uint256"
+            }
+        ],
+        "name": "getDilutionTimestamp3",
+        "inputs": []
+    },
+    {
+        "type": "function",
+        "stateMutability": "view",
+        "outputs": [
+            {
+                "type": "address",
+                "name": "",
+                "internalType": "address"
+            }
+        ],
+        "name": "getEthAddressFromSignature",
+        "inputs": [
+            {
+                "type": "address",
+                "name": "_claimToAddr",
+                "internalType": "address"
+            },
+            {
+                "type": "bool",
+                "name": "_claimAddrChecksum",
+                "internalType": "bool"
+            },
+            {
+                "type": "bytes",
+                "name": "_postfix",
+                "internalType": "bytes"
+            },
+            {
+                "type": "uint8",
+                "name": "_v",
+                "internalType": "uint8"
+            },
+            {
+                "type": "bytes32",
+                "name": "_r",
+                "internalType": "bytes32"
+            },
+            {
+                "type": "bytes32",
+                "name": "_s",
+                "internalType": "bytes32"
+            }
+        ]
+    },
+    {
+        "type": "function",
+        "stateMutability": "view",
+        "outputs": [
+            {
+                "type": "bytes32",
+                "name": "",
+                "internalType": "bytes32"
+            }
+        ],
+        "name": "getHashForClaimMessage",
+        "inputs": [
+            {
+                "type": "address",
+                "name": "_claimToAddr",
+                "internalType": "address"
+            },
+            {
+                "type": "bool",
+                "name": "_claimAddrChecksum",
+                "internalType": "bool"
+            },
+            {
+                "type": "bytes",
+                "name": "_postfix",
+                "internalType": "bytes"
+            }
+        ]
+    },
+    {
+        "type": "function",
+        "stateMutability": "pure",
+        "outputs": [
+            {
+                "type": "address",
+                "name": "",
+                "internalType": "address"
+            }
+        ],
+        "name": "getPublicKeyFromBitcoinSignature",
+        "inputs": [
+            {
+                "type": "bytes32",
+                "name": "hashValue",
+                "internalType": "bytes32"
+            },
+            {
+                "type": "bytes32",
+                "name": "r",
+                "internalType": "bytes32"
+            },
+            {
+                "type": "bytes32",
+                "name": "s",
+                "internalType": "bytes32"
+            },
+            {
+                "type": "uint8",
+                "name": "v",
+                "internalType": "uint8"
+            }
+        ]
+    },
+    {
+        "type": "function",
+        "stateMutability": "view",
+        "outputs": [
+            {
+                "type": "address",
+                "name": "",
+                "internalType": "address payable"
+            }
+        ],
+        "name": "lateClaimBeneficorAddressDAO",
+        "inputs": []
+    },
+    {
+        "type": "function",
+        "stateMutability": "view",
+        "outputs": [
+            {
+                "type": "address",
+                "name": "",
+                "internalType": "address payable"
+            }
+        ],
+        "name": "lateClaimBeneficorAddressReinsertPot",
+        "inputs": []
+    },
+    {
+        "type": "function",
+        "stateMutability": "view",
+        "outputs": [
+            {
+                "type": "bytes",
+                "name": "",
+                "internalType": "bytes"
+            }
+        ],
+        "name": "prefixStr",
+        "inputs": []
+    },
+    {
+        "type": "function",
+        "stateMutability": "pure",
+        "outputs": [
+            {
+                "type": "address",
+                "name": "",
+                "internalType": "address"
+            }
+        ],
+        "name": "pubKeyToEthAddress",
+        "inputs": [
+            {
+                "type": "bytes32",
+                "name": "pubKeyX",
+                "internalType": "bytes32"
+            },
+            {
+                "type": "bytes32",
+                "name": "pubKeyY",
+                "internalType": "bytes32"
+            }
+        ]
+    },
+    {
+        "type": "function",
+        "stateMutability": "pure",
+        "outputs": [
+            {
+                "type": "bytes20",
+                "name": "rawBtcAddress",
+                "internalType": "bytes20"
+            }
+        ],
+        "name": "publicKeyToBitcoinAddress",
+        "inputs": [
+            {
+                "type": "bytes32",
+                "name": "_publicKeyX",
+                "internalType": "bytes32"
+            },
+            {
+                "type": "bytes32",
+                "name": "_publicKeyY",
+                "internalType": "bytes32"
+            },
+            {
+                "type": "uint8",
+                "name": "_addressType",
+                "internalType": "enum ClaimContract.AddressType"
+            }
+        ]
+    },
+    {
+        "type": "function",
+        "stateMutability": "pure",
+        "outputs": [
+            {
+                "type": "address",
+                "name": "",
+                "internalType": "address"
+            }
+        ],
+        "name": "publicKeyToEthereumAddress",
+        "inputs": [
+            {
+                "type": "bytes32",
+                "name": "_publicKeyX",
+                "internalType": "bytes32"
+            },
+            {
+                "type": "bytes32",
+                "name": "_publicKeyY",
+                "internalType": "bytes32"
+            }
+        ]
+    }
+]

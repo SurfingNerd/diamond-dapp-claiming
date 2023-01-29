@@ -1,0 +1,28 @@
+.navbar {
+    width: 100%;
+    display: flex;
+    justify-content: end;
+}
+
+.navConnectBtn {
+    height: 45px;
+    width: 180px;
+    font-size: 14px;
+    cursor: pointer;
+    overflow: hidden;
+    font-weight: 700;
+    color: #1F45B2;
+    margin-top: 10px;
+    letter-spacing: 0;
+    margin-right: 10px;
+    border-radius: 99px;
+    border-color: #1F45B2;
+    text-overflow: ellipsis;
+    border-width: 2px !important;
+}
+
+.navConnectBtn:hover {
+    color:white;
+    background-color: #1F45B2;
+    transition: background-color .5s;
+}
