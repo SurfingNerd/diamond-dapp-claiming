@@ -9,14 +9,14 @@ function App() {
   const getClaimContract = async () => {
     let claimCAbi: any = claimAbi;
 
-    const rpcUrl = 'http://rpc.uniq.diamonds:8540';
-    const claimContractAddress = '0xE1B81826cf8DA91097B6Ab1d160eD6e139C29b52';
+    const rpcUrl = 'https://rpc.uniq.diamonds';
+    const claimContractAddress = '0xF7f552e953c1657af2604678829112e05Aa810e4';
     const web3 = new Web3(rpcUrl);
 
     const claimContract = new web3.eth.Contract(claimCAbi, claimContractAddress);
     return claimContract;
   }
-
+ 
   const checkBalance = async (claimContract: any, v3Address: string) => {
     const balance = await claimContract.methods.balances(v3Address).call();
     console.log("Balance", balance)
@@ -34,7 +34,6 @@ function App() {
     const v4Address = e.target[0].value;
 
     const claimContract = await getClaimContract();
-
     const ripe = dmdAddressToRipeResult(v3Address);
     const hasBalance = await checkBalance(claimContract, ensure0x(ripe));
 
@@ -65,9 +64,7 @@ function App() {
     <>
       <Navbar />
       <div className="App">
-
         <h1>Diamond Claim</h1>
-
         <form className='claimForm' onSubmit={claimSubmit}>
           <input placeholder='V3 Address' required minLength={34} maxLength={34}/>
           <input placeholder='V4 Address' required minLength={42} maxLength={42}/>
