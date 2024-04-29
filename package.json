@@ -11,24 +11,35 @@
     "@types/node": "^16.18.11",
     "@types/react": "^18.0.27",
     "@types/react-dom": "^18.0.10",
+    "@web3modal/wagmi": "^3.5.6",
     "base58check": "^2.0.0",
+    "bitcoinjs-lib": "^6.1.5",
     "bitcoinjs-message": "^2.2.0",
+    "bn.js": "^5.2.1",
+    "bs58check": "^3.0.1",
     "crypto": "^1.0.1",
-    "elliptic": "^6.5.4",
+    "crypto-browserify": "^3.12.0",
+    "elliptic": "^6.5.5",
+    "ethers": "^6.12.0",
+    "node-polyfill-webpack-plugin": "^3.0.0",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
     "react-redux": "^8.0.5",
-    "react-scripts": "^4.0.3",
+    "react-scripts": "^5.0.1",
+    "react-toastify": "^9.0.3",
     "secp256k1": "^5.0.0",
-    "typescript": "^4.9.4",
+    "stream-browserify": "^3.0.0",
+    "tiny-secp256k1": "^2.2.3",
+    "typescript": "^5.4.5",
+    "wagmi": "^1.4.13",
     "web-vitals": "^2.1.4",
-    "web3": "^1.8.1"
+    "web3modal": "^1.9.12"
   },
   "scripts": {
-    "start": "react-scripts start",
-    "build": "react-scripts build",
-    "test": "react-scripts test",
-    "eject": "react-scripts eject"
+    "start": "react-app-rewired start",
+    "build": "react-app-rewired build",
+    "test": "react-app-rewired test",
+    "eject": "react-app-rewired eject"
   },
   "eslintConfig": {
     "extends": [
@@ -47,5 +58,11 @@
       "last 1 firefox version",
       "last 1 safari version"
     ]
+  },
+  "devDependencies": {
+    "@types/bn.js": "^5.1.5",
+    "@types/elliptic": "^6.4.18",
+    "@types/secp256k1": "^4.0.6",
+    "react-app-rewired": "^2.2.1"
   }
 }

@@ -1,6 +1,8 @@
 .navbar {
-    width: 100%;
+    right: 0;
+    padding: 20px;
     display: flex;
+    position: absolute;
     justify-content: end;
 }
 
@@ -12,9 +14,7 @@
     overflow: hidden;
     font-weight: 700;
     color: #1F45B2;
-    margin-top: 10px;
     letter-spacing: 0;
-    margin-right: 10px;
     border-radius: 99px;
     border-color: #1F45B2;
     text-overflow: ellipsis;
