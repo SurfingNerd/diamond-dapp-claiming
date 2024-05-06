@@ -8,9 +8,11 @@ import { useRootContext } from "../../contexts/RootContext/RootContext";
 const ClaimForm = () => {
   const { showLoader, provider, claimApi, ensureWalletConnection } = useRootContext();
 
+  const [postFix, setPostFix] = useState("");
+  const [v3Address, setV3Address] = useState("");
   const [v4Address, setV4Address] = useState("");
-  const [balance, setBalance] = useState<string | null>();
   const [signedMessage, setSignedMessage] = useState("");
+  const [balance, setBalance] = useState<string | null>();
 
   useEffect(() => {
     if (v4Address && signedMessage) {
@@ -22,7 +24,8 @@ const ClaimForm = () => {
 
   const checkForBalance = async (v4Address: string, signature: string): Promise<BN> => {
     try {
-      const v3Address = await claimApi.getDmdV3Address(v4Address, signature, "", true)
+      const v3Address = await claimApi.getDmdV3Address(v4Address, signature, "", true);
+      setV3Address(v3Address);
       return await claimApi.getBalance(v3Address);   
     } catch (e) {
       console.log(e)
@@ -37,7 +40,7 @@ const ClaimForm = () => {
     showLoader(true, "Claiming...");
     const toastid = toast.loading("");
 
-    claimApi.claim(v4Address, signedMessage, "", true).then(async (res: any) => {
+    claimApi.claim(v4Address, signedMessage, postFix, true).then(async (res: any) => {
       showLoader(false, "");
       if (res.success) {
         await checkForBalance(v4Address, signedMessage).then((res: BN) => {
@@ -45,7 +48,7 @@ const ClaimForm = () => {
         });
         toast.update(toastid, { render: "Claimed successfully!", type: "success", isLoading: false, autoClose: 5000 });
       } else {
-        let errMsg = "Incorrect V4 address, signature or nothing to claim.";
+        let errMsg = "Incorrect V4 address, postfix or signature. Please try again.";
         if (res.msg && res.msg.includes("rejected")) errMsg = res.msg.charAt(0).toUpperCase() + res.msg.slice(1);
         toast.update(toastid, { render: errMsg, type: "error", isLoading: false, autoClose: 5000 });
       }
@@ -63,15 +66,25 @@ const ClaimForm = () => {
           maxLength={42}
         />
         <input
+          placeholder="Postfix (Optional)"
+          onChange={(e) => setPostFix(e.target.value)}
+        />
+        <input
           placeholder="Signed Message"
           onChange={(e) => setSignedMessage(e.target.value)}
           required
         />
         {balance && (
+          <div>
           <p>
             Claimable:{" "}
             {balance.toString()} DMD
           </p>
+          <p>
+            v3Address:{" "}
+            {v3Address}
+          </p>
+          </div>
         )}
         <button disabled={balance && parseFloat(balance) > 0 ? false : true}>Claim</button>
       </form>
