@@ -20,7 +20,7 @@ const ClaimForm = () => {
         setBalance(ethers.formatEther(res.toString()));
       });
     }
-  }, [v4Address, signedMessage]);
+  }, [v4Address, postFix, signedMessage]);
 
   const checkForBalance = async (v4Address: string, signature: string): Promise<BN> => {
     try {
