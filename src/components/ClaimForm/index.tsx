@@ -24,7 +24,7 @@ const ClaimForm = () => {
 
   const checkForBalance = async (v4Address: string, signature: string): Promise<BN> => {
     try {
-      const v3Address = await claimApi.getDmdV3Address(v4Address, signature, "", true);
+      const v3Address = await claimApi.getDmdV3Address(v4Address, signature, postFix, true);
       setV3Address(v3Address);
       return await claimApi.getBalance(v3Address);   
     } catch (e) {
