@@ -2,11 +2,12 @@ import { ethers } from 'ethers';
 import Web3Modal from "web3modal";
 import { toast } from 'react-toastify';
 import Loader from '../../components/Loader';
+import { DMDClaimingAPI } from '../../utils';
 import { ContextProviderProps } from "./types";
 import claimAbi from '../../abis/claimAbi.json';
+import { Log } from '@ethersproject/abstract-provider';
 import { walletConnectProvider } from "@web3modal/wagmi";
 import React, { createContext, useContext, useEffect, useState } from "react";
-import { DMDClaimingAPI } from '../../utils';
 
 interface RootContextProps {
   provider: any,
@@ -63,13 +64,13 @@ const RootContextProvider: React.FC<ContextProviderProps> = ({ children }) => {
         };
 
         const providerOptions: any = {
-            walletconnect: {
-                package: walletConnectProvider,
-                options: {
-                    chainId,
-                    rpc: chainOptions,
-                },
-            },
+            // walletconnect: {
+            //     package: walletConnectProvider,
+            //     options: {
+            //         chainId,
+            //         rpc: chainOptions,
+            //     },
+            // },
         };
 
         const web3Modal = new Web3Modal({
@@ -163,20 +164,28 @@ const RootContextProvider: React.FC<ContextProviderProps> = ({ children }) => {
   const getClaimTxHash = async (v4Address: string): Promise<string | null> => {
     try {
         // Define the filter
-        console.log({v4Address})
         const filter = claimApi.contract.filters.Claim(v4Address);
+        const fromBlock = process.env.REACT_APP_CONTRACT_DEPLOY_BLOCK || '0';
+        const contractAddress = process.env.REACT_APP_CLAIMING_CONTRACT || '0x775A61Ce1D94936829e210839650b893000bE15a';
 
         // Fetch the logs
-        const logs = await provider.getLogs({
-            ...filter,
-            fromBlock: 752002,
-            toBlock: 'latest'
+        const logs: Log[] = await provider.getLogs({
+            toBlock: 'latest',
+            topics: filter.topics,
+            address: contractAddress,
+            fromBlock: Number(fromBlock)
+            
         });
 
         if (logs.length === 0) {
           return null;
         } else {
-          return logs[logs.length-1].transactionHash;
+          const latestLog = logs.reduce(
+            (max: Log, log: Log) =>
+              log.blockNumber > max.blockNumber ? log : max,
+            logs[0]
+          );
+          return latestLog.transactionHash;
         }
     } catch (error) {
       console.log(error)
