@@ -7,6 +7,7 @@ const Navbar = () => {
 
     return (
         <div className={styles.navbar}>
+            <a href="#">User Guide how to claim the v4 DMD</a>
             <button className={styles.navConnectBtn} onClick={connectWallet}>
                 {account ? account : 'Connect Wallet'}
             </button>

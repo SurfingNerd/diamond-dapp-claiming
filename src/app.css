@@ -1,8 +1,10 @@
 .App {
+  top: 0;
   width: 100%;
   height: 100%;
   display: flex;
   overflow: hidden;
+  position: absolute;
   align-items: center;
   flex-direction: column;
   justify-content: center;
@@ -10,16 +12,22 @@
 
 .claimForm {
   gap: 1rem;
+  width: 500px;
   height: 100%;
   display: flex;
   min-width: 360px;
   flex-direction: column;
+  align-items: flex-start;
   justify-content: center;
-  align-items: center;
+  font-size: 20px;
 }
 
 .claimForm > p {
   align-self: flex-start;
+}
+
+.claimForm > div {
+  width: 100%;
 }
 
 input {

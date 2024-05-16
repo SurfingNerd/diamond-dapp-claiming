@@ -399,7 +399,7 @@ export class DMDClaimingAPI {
       let receipt = await (await claimOperation).wait();
       return { success: true, msg: receipt};
     } catch(err: any) {
-      return { success: false, msg: err.shortMessage }
+      return { success: false, msg: err.shortMessage || err.message }
     }
   }
 
@@ -621,5 +621,10 @@ export class DMDClaimingAPI {
     );
     const ripe = await this.contract.publicKeyToBitcoinAddress(pubkey.x, pubkey.y, 1);
     return this.cryptoJS.ripeToDMDAddress(Buffer.from(ripe.substring(2), "hex"));
+  }
+
+  public async getDmdV4Address(v3Address: string): Promise<string> {
+    const ripe = this.cryptoJS.dmdAddressToRipeResult(v3Address);
+    return ensure0x(ripe);
   }
 }

@@ -32,7 +32,7 @@ function App() {
       <div className="App">
         <div className="body-bg"></div>
         <div id="body-bg-glow" className="body-bg-glow"></div>
-        <h1>Diamond Claim</h1>
+        <h1>Claim your V4 DMD coins</h1>
         <ClaimForm />
       </div>
     </>

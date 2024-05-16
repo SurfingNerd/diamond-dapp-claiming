@@ -2,8 +2,10 @@
     right: 0;
     padding: 20px;
     display: flex;
-    position: absolute;
-    justify-content: end;
+    align-items: center;
+    position: relative;
+    z-index: 100;
+    justify-content: space-between;
 }
 
 .navConnectBtn {

@@ -17,6 +17,7 @@ interface RootContextProps {
   ensureWalletConnection: () => boolean,
   showLoader: (loading: boolean, loadingMsg: string) => void,
   connectWallet: () => Promise<{ provider: any } | undefined>,
+  getClaimTxHash: (v3Address: string) => Promise<string | null>,
 }
 
 const RootContext = createContext<RootContextProps | undefined>(undefined);
@@ -28,7 +29,7 @@ const RootContextProvider: React.FC<ContextProviderProps> = ({ children }) => {
   const [claimContract, setClaimContract] = useState<any>(null);
   const [loadingMessage, setLoadingMessage] = useState<string>("");
   const [rootInitialized, setRootInitialized] = useState<boolean>(false);
-  const [provider, setProvider] = useState<any>(new ethers.JsonRpcProvider("https://rpc.uniq.diamonds"));
+  const [provider, setProvider] = useState<any>(new ethers.JsonRpcProvider(process.env.REACT_APP_RPC_URL));
 
   useEffect(() => {
     console.log("[INFO] Initializing Root Context");
@@ -56,7 +57,7 @@ const RootContextProvider: React.FC<ContextProviderProps> = ({ children }) => {
         const chainId = 777012;
         let chainIdHex = ethers.toBeHex(chainId);
         chainIdHex = chainIdHex.slice(0, 2) + chainIdHex.slice(3);
-        const url = "https://rpc.uniq.diamonds";
+        const url = process.env.REACT_APP_RPC_URL || "http://localhost:8545";
         const chainOptions: { [key: number]: string } = {
             [chainId]: url,
         };
@@ -138,7 +139,7 @@ const RootContextProvider: React.FC<ContextProviderProps> = ({ children }) => {
 
   const getClaimContract = async () => {
     let signer;
-    const contractAddress = process.env.contractAddress || '0x775A61Ce1D94936829e210839650b893000bE15a';
+    const contractAddress = process.env.REACT_APP_CLAIMING_CONTRACT || '0x775A61Ce1D94936829e210839650b893000bE15a';
 
     try {
       signer = await provider.getSigner(0);
@@ -153,10 +154,33 @@ const RootContextProvider: React.FC<ContextProviderProps> = ({ children }) => {
 
   const ensureWalletConnection = (): boolean => {
     if (!account) {
-      toast.warn("Please connect your wallet first");
+      toast.warn("Please connect your wallet to procced.");
       return false;
     }
     return true;
+  }
+
+  const getClaimTxHash = async (v4Address: string): Promise<string | null> => {
+    try {
+        // Define the filter
+        const filter = claimApi.contract.filters.Claim(v4Address);
+
+        // Fetch the logs
+        const logs = await provider.getLogs({
+            ...filter,
+            fromBlock: 752002,
+            toBlock: 'latest'
+        });
+
+        if (logs.length === 0) {
+          return null;
+        } else {
+          return logs[0].transactionHash;
+        }
+    } catch (error) {
+      console.log(error)
+      return null;
+    }
   }
 
   const contextValue = {
@@ -166,6 +190,7 @@ const RootContextProvider: React.FC<ContextProviderProps> = ({ children }) => {
     rootInitialized,
     
     ensureWalletConnection,
+    getClaimTxHash,
     connectWallet,
     showLoader
   };
