@@ -163,6 +163,7 @@ const RootContextProvider: React.FC<ContextProviderProps> = ({ children }) => {
   const getClaimTxHash = async (v4Address: string): Promise<string | null> => {
     try {
         // Define the filter
+        console.log({v4Address})
         const filter = claimApi.contract.filters.Claim(v4Address);
 
         // Fetch the logs
@@ -175,7 +176,7 @@ const RootContextProvider: React.FC<ContextProviderProps> = ({ children }) => {
         if (logs.length === 0) {
           return null;
         } else {
-          return logs[0].transactionHash;
+          return logs[logs.length-1].transactionHash;
         }
     } catch (error) {
       console.log(error)

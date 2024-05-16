@@ -8,7 +8,6 @@ import { useRootContext } from "../../contexts/RootContext/RootContext";
 const ClaimForm = () => {
   const { showLoader, provider, claimApi, ensureWalletConnection, getClaimTxHash } = useRootContext();
   
-  
   const [v3Address, setV3Address] = useState("");
   const [v4Address, setV4Address] = useState("");
   const [signedMessage, setSignedMessage] = useState("");
@@ -36,10 +35,8 @@ const ClaimForm = () => {
       setValidV3Address(true);
       getClaimTxHash(v4Address).then(async (res: string | null) => {
         if (res) {
-        // if (!res) {
           setClaimError("");
-          // setClaimedTxHash(res);
-          setClaimedTxHash(res || "");
+          setClaimedTxHash(res);
           setClaimableBalance(null);
         } else {
           await claimApi.getBalance(v3Address).then((res: BN) => {
@@ -244,14 +241,19 @@ const ClaimForm = () => {
         )}
 
         {validV4Address && claimableBalance && signedMessage && (
-          <button
-            disabled={
-              claimableBalance && parseFloat(claimableBalance) > 0
-                ? false
-                : true
-            }
-          >
-            Claim
+          <button disabled={
+            claimableBalance && parseFloat(claimableBalance) > 0
+              ? false
+              : true
+          } className={styles.claimButton}>
+            <div className={styles.svgWrapper1}>
+                <div className={styles.svgWrapper}>
+                    <span className={styles.diamond}>
+                        💎
+                    </span>
+                </div>
+            </div>
+            <span>Claim</span>
           </button>
         )}
       </form>
