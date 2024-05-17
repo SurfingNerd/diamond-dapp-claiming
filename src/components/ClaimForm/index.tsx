@@ -33,6 +33,7 @@ const ClaimForm = () => {
     try {
       setFetchingBalance(true);
       const v4Address = await claimApi.getDmdV4Address(v3Address);
+      console.log({v4Address})
       setValidV3Address(true);
       getClaimTxHash(v4Address).then(async (res: string | null) => {
         if (res) {
@@ -42,7 +43,7 @@ const ClaimForm = () => {
           setClaimableBalance(null);
         } else {
           await claimApi.getBalance(v3Address).then((res: BN) => {
-            if (res > new BN(ethers.parseEther("-1").toString())) {
+            if (res > new BN(ethers.parseEther("1").toString())) {
               setClaimError("");
               setClaimedTxHash("");
               setClaimableBalance(ethers.formatEther(res.toString()));

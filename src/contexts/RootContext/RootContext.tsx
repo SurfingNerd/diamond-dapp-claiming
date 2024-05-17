@@ -163,35 +163,39 @@ const RootContextProvider: React.FC<ContextProviderProps> = ({ children }) => {
 
   const getClaimTxHash = async (v4Address: string): Promise<string | null> => {
     try {
-        // Define the filter
-        const filter = claimApi.contract.filters.Claim(v4Address);
+        // Define the filter with the indexed parameter _from
+        const filter = claimApi.contract.filters.Claim(v4Address, null, null, null);
+
+        // Specify the fromBlock and contractAddress
         const fromBlock = process.env.REACT_APP_CONTRACT_DEPLOY_BLOCK || '0';
         const contractAddress = process.env.REACT_APP_CLAIMING_CONTRACT || '0x775A61Ce1D94936829e210839650b893000bE15a';
 
         // Fetch the logs
         const logs: Log[] = await provider.getLogs({
+            fromBlock: Number(fromBlock),
             toBlock: 'latest',
-            topics: filter.topics,
             address: contractAddress,
-            fromBlock: Number(fromBlock)
-            
+            topics: filter.topics,
         });
 
         if (logs.length === 0) {
-          return null;
+            return null;
         } else {
-          const latestLog = logs.reduce(
-            (max: Log, log: Log) =>
-              log.blockNumber > max.blockNumber ? log : max,
-            logs[0]
-          );
-          return latestLog.transactionHash;
+            const iface = new ethers.Interface(claimAbi);
+            const latestLogs = logs
+            .map((log) => {
+                const parsedLog = iface.parseLog(log) as any;
+                return {args: parsedLog.args, transactionHash: log.transactionHash};
+
+            })
+            .filter((parsedLog) => parsedLog?.args[0] === v4Address) as any;
+            return latestLogs.length > 0 ? latestLogs[latestLogs.length - 1].transactionHash : null;
         }
     } catch (error) {
-      console.log(error)
-      return null;
+        console.log(error);
+        return null;
     }
-  }
+  };
 
   const contextValue = {
     account,
