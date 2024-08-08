@@ -2,12 +2,11 @@ import { ethers } from 'ethers';
 import Web3Modal from "web3modal";
 import { toast } from 'react-toastify';
 import Loader from '../../components/Loader';
-import { DMDClaimingAPI } from '../../utils';
 import { ContextProviderProps } from "./types";
-import claimAbi from '../../abis/claimAbi.json';
 import { Log } from '@ethersproject/abstract-provider';
-import { walletConnectProvider } from "@web3modal/wagmi";
+import { CryptoSol } from 'diamond-contracts-claiming/dist/api/src/cryptoSol';
 import React, { createContext, useContext, useEffect, useState } from "react";
+import ClaimContract from 'diamond-contracts-claiming/artifacts/contracts/ClaimContract.sol/ClaimContract.json';
 
 interface RootContextProps {
   provider: any,
@@ -49,7 +48,7 @@ const RootContextProvider: React.FC<ContextProviderProps> = ({ children }) => {
 
     getClaimContract().then((contract: any) => {
       setClaimContract(contract);
-      setClaimApi(new DMDClaimingAPI(contract));
+      setClaimApi(new CryptoSol(contract));
     });
   }
 
@@ -148,7 +147,7 @@ const RootContextProvider: React.FC<ContextProviderProps> = ({ children }) => {
     
     return new ethers.Contract(
       contractAddress, 
-      claimAbi,
+      ClaimContract.abi,
       signer ? signer : provider
     );
   }
@@ -181,7 +180,7 @@ const RootContextProvider: React.FC<ContextProviderProps> = ({ children }) => {
         if (logs.length === 0) {
             return null;
         } else {
-            const iface = new ethers.Interface(claimAbi);
+            const iface = new ethers.Interface(ClaimContract.abi);
             const latestLogs = logs
             .map((log) => {
                 const parsedLog = iface.parseLog(log) as any;
