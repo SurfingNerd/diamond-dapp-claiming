@@ -2,12 +2,11 @@ import { ethers } from 'ethers';
 import Web3Modal from "web3modal";
 import { toast } from 'react-toastify';
 import Loader from '../../components/Loader';
-import { DMDClaimingAPI } from '../../utils';
 import { ContextProviderProps } from "./types";
-import claimAbi from '../../abis/claimAbi.json';
 import { Log } from '@ethersproject/abstract-provider';
-import { walletConnectProvider } from "@web3modal/wagmi";
+import { CryptoSol } from 'diamond-contracts-claiming/dist/api/src/cryptoSol';
 import React, { createContext, useContext, useEffect, useState } from "react";
+import ClaimContract from 'diamond-contracts-claiming/artifacts/contracts/ClaimContract.sol/ClaimContract.json';
 
 interface RootContextProps {
   provider: any,
@@ -16,6 +15,7 @@ interface RootContextProps {
   rootInitialized: boolean,
 
   ensureWalletConnection: () => boolean,
+  handleErrorMsg: (err: Error, alternateMsg: string) => void,
   showLoader: (loading: boolean, loadingMsg: string) => void,
   connectWallet: () => Promise<{ provider: any } | undefined>,
   getClaimTxHash: (v3Address: string) => Promise<string | null>,
@@ -49,13 +49,21 @@ const RootContextProvider: React.FC<ContextProviderProps> = ({ children }) => {
 
     getClaimContract().then((contract: any) => {
       setClaimContract(contract);
-      setClaimApi(new DMDClaimingAPI(contract));
+      setClaimApi(new CryptoSol(contract));
     });
+  }
+
+  const handleErrorMsg = (err: Error, alternateMsg: string) => {
+    if (err.message && !err.message.includes("EVM") && (err.message.includes("MetaMask") || err.message.includes("rejected"))) {
+      toast.error("Transaction rejected by user.");
+    } else {
+      toast.error(alternateMsg);
+    }
   }
 
   const connectWallet = async (): Promise<any> => {
     try {
-        const chainId = 777012;
+        const chainId = process.env.REACT_APP_CHAIN_ID || 777012;
         let chainIdHex = ethers.toBeHex(chainId);
         chainIdHex = chainIdHex.slice(0, 2) + chainIdHex.slice(3);
         const url = process.env.REACT_APP_RPC_URL || "http://localhost:8545";
@@ -148,7 +156,7 @@ const RootContextProvider: React.FC<ContextProviderProps> = ({ children }) => {
     
     return new ethers.Contract(
       contractAddress, 
-      claimAbi,
+      ClaimContract.abi,
       signer ? signer : provider
     );
   }
@@ -164,24 +172,25 @@ const RootContextProvider: React.FC<ContextProviderProps> = ({ children }) => {
   const getClaimTxHash = async (v4Address: string): Promise<string | null> => {
     try {
         // Define the filter with the indexed parameter _from
-        const filter = claimApi.contract.filters.Claim(v4Address, null, null, null);
+        const eventSignature = ethers.id("Claim(bytes20,address,uint256,uint256,uint256)");
+        const topics = [eventSignature, ethers.zeroPadValue(v4Address, 32)];
 
         // Specify the fromBlock and contractAddress
         const fromBlock = process.env.REACT_APP_CONTRACT_DEPLOY_BLOCK || '0';
-        const contractAddress = process.env.REACT_APP_CLAIMING_CONTRACT || '0x775A61Ce1D94936829e210839650b893000bE15a';
+        const contractAddress = process.env.REACT_APP_CLAIMING_CONTRACT || '0xCAFa71b474541D1676093866088ccA4AB9a07722';
 
         // Fetch the logs
         const logs: Log[] = await provider.getLogs({
             fromBlock: Number(fromBlock),
             toBlock: 'latest',
             address: contractAddress,
-            topics: filter.topics,
+            topics: topics,
         });
 
         if (logs.length === 0) {
             return null;
         } else {
-            const iface = new ethers.Interface(claimAbi);
+            const iface = new ethers.Interface(ClaimContract.abi);
             const latestLogs = logs
             .map((log) => {
                 const parsedLog = iface.parseLog(log) as any;
@@ -204,6 +213,7 @@ const RootContextProvider: React.FC<ContextProviderProps> = ({ children }) => {
     rootInitialized,
     
     ensureWalletConnection,
+    handleErrorMsg,
     getClaimTxHash,
     connectWallet,
     showLoader

@@ -22,6 +22,7 @@
     "bs58check": "^3.0.1",
     "crypto": "^1.0.1",
     "crypto-browserify": "^3.12.0",
+    "diamond-contracts-claiming": "github:MSalman6/diamond-contracts-claiming#for-ui",
     "elliptic": "^6.5.5",
     "ethers": "^6.12.0",
     "node-polyfill-webpack-plugin": "^3.0.0",
@@ -67,5 +68,8 @@
     "@types/elliptic": "^6.4.18",
     "@types/secp256k1": "^4.0.6",
     "react-app-rewired": "^2.2.1"
+  },
+  "overrides": {
+    "typescript": "^5.4.5"
   }
 }
