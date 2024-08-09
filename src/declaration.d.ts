@@ -1,1 +1,1 @@
-declare module 'diamond-contracts-claiming/dist/api/src/cryptoSol';
+declare module 'diamond-contracts-claiming/dist/api/src/*';

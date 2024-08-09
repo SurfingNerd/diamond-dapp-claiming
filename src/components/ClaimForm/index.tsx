@@ -5,9 +5,16 @@ import styles from "./styles.module.css";
 import { MESSAGES } from "../../constants/messages";  
 import { useEffect, useRef, useState } from "react";
 import { useRootContext } from "../../contexts/RootContext/RootContext";
+import { ensure0x } from "diamond-contracts-claiming/dist/api/src/cryptoHelpers";
 
 const ClaimForm = () => {
-  const { showLoader, provider, claimApi, ensureWalletConnection, getClaimTxHash } = useRootContext();
+  const {
+    claimApi,
+    showLoader,
+    getClaimTxHash,
+    handleErrorMsg,
+    ensureWalletConnection,
+  } = useRootContext();
   
   const [v3Address, setV3Address] = useState("");
   const [v4Address, setV4Address] = useState("");
@@ -32,7 +39,7 @@ const ClaimForm = () => {
   const checkForBalance = async () => {
     try {
       setFetchingBalance(true);
-      const v4Address = await claimApi.getDmdV4Address(v3Address);
+      const v4Address = ensure0x(claimApi.cryptoJS.dmdAddressToRipeResult(v3Address));
       console.log({v4Address})
       setValidV3Address(true);
       getClaimTxHash(v4Address).then(async (res: string | null) => {
@@ -75,17 +82,16 @@ const ClaimForm = () => {
     e.preventDefault();
     if (!ensureWalletConnection()) return;
 
-    showLoader(true, "Claiming...");
-    const toastid = toast.loading("");
+    showLoader(true, "Claiming... 💎");
     const postFix = signedMessage.split(v4Address)[1] || "";
 
-    claimApi.claim(v4Address, signedMessage, postFix, true).then(async (res: any) => {
+    claimApi.claim(v3Address, v4Address, signedMessage, postFix).then(async (res: any) => {
       showLoader(false, "");
       setSignatureError(null);
       if (res.success) {
         setClaimSuccess(true);
         await checkForBalance();
-        toast.update(toastid, { render: MESSAGES.claimSuccess, type: "success", isLoading: false, autoClose: 5000 });
+        toast.success(MESSAGES.claimSuccess);
       } else {
         let errMsg = MESSAGES.claimError;
         if (res.msg && res.msg.includes("signature")) 
@@ -96,8 +102,13 @@ const ClaimForm = () => {
           );
         }
         if (res.msg && res.msg.includes("rejected")) errMsg = res.msg.charAt(0).toUpperCase() + res.msg.slice(1);
-        toast.update(toastid, { render: errMsg, type: "error", isLoading: false, autoClose: 5000 });
+        toast.error(errMsg);
       }
+    })
+    .catch((err: any) => {
+      showLoader(false, "");
+      console.log("[ERROR] Err", err);
+      handleErrorMsg(err, "Couldn't claim DMD, please try again later");
     });
   };
 
@@ -181,7 +192,7 @@ const ClaimForm = () => {
               fetchingBalance ? (
                 <p>{MESSAGES.fetchingBalance}</p>
               ) : (
-                <p>{MESSAGES.claimableDmd} {claimableBalance?.toString()} DMD</p>
+                <p>{MESSAGES.claimableDmd} {Number(claimableBalance).toFixed(2)} DMD</p>
               )
             }
           </div>
