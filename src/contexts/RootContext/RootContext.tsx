@@ -148,7 +148,7 @@ const RootContextProvider: React.FC<ContextProviderProps> = ({ children }) => {
 
   const getClaimContract = async () => {
     let signer;
-    const contractAddress = process.env.REACT_APP_CLAIMING_CONTRACT || '0x775A61Ce1D94936829e210839650b893000bE15a';
+    const contractAddress = process.env.REACT_APP_CLAIMING_CONTRACT || '0xCAFa71b474541D1676093866088ccA4AB9a07722';
 
     try {
       signer = await provider.getSigner(0);

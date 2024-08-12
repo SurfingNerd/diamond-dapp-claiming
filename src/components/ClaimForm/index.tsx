@@ -40,7 +40,6 @@ const ClaimForm = () => {
     try {
       setFetchingBalance(true);
       const v4Address = ensure0x(claimApi.cryptoJS.dmdAddressToRipeResult(v3Address));
-      console.log({v4Address})
       setValidV3Address(true);
       getClaimTxHash(v4Address).then(async (res: string | null) => {
         if (res) {
