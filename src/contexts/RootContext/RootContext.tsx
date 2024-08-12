@@ -171,38 +171,25 @@ const RootContextProvider: React.FC<ContextProviderProps> = ({ children }) => {
 
   const getClaimTxHash = async (v4Address: string): Promise<string | null> => {
     try {
-        // Define the filter with the indexed parameter _from
-        const eventSignature = ethers.id("Claim(bytes20,address,uint256,uint256,uint256)");
-        const topics = [eventSignature, ethers.zeroPadValue(v4Address, 32)];
-
-        // Specify the fromBlock and contractAddress
-        const fromBlock = process.env.REACT_APP_CONTRACT_DEPLOY_BLOCK || '0';
-        const contractAddress = process.env.REACT_APP_CLAIMING_CONTRACT || '0xCAFa71b474541D1676093866088ccA4AB9a07722';
-
-        // Fetch the logs
-        const logs: Log[] = await provider.getLogs({
-            fromBlock: Number(fromBlock),
-            toBlock: 'latest',
-            address: contractAddress,
-            topics: topics,
-        });
+        let eventFilter = claimContract.filters.Claim(v4Address);
+        let logs: Log[] = await claimContract.queryFilter(eventFilter, Number(process.env.REACT_APP_CONTRACT_DEPLOY_BLOCK || 0));
 
         if (logs.length === 0) {
-            return null;
+          return null;
         } else {
-            const iface = new ethers.Interface(ClaimContract.abi);
-            const latestLogs = logs
-            .map((log) => {
-                const parsedLog = iface.parseLog(log) as any;
-                return {args: parsedLog.args, transactionHash: log.transactionHash};
+          const iface = new ethers.Interface(ClaimContract.abi);
+          const latestLogs = logs
+          .map((log) => {
+            const parsedLog = iface.parseLog(log) as any;
+            return {args: parsedLog.args, transactionHash: log.transactionHash};
 
-            })
-            .filter((parsedLog) => parsedLog?.args[0] === v4Address) as any;
-            return latestLogs.length > 0 ? latestLogs[latestLogs.length - 1].transactionHash : null;
+          })
+          .filter((parsedLog) => parsedLog?.args[0] === v4Address) as any;
+          return latestLogs.length > 0 ? latestLogs[latestLogs.length - 1].transactionHash : null;
         }
     } catch (error) {
-        console.log(error);
-        return null;
+      console.log(error);
+      return null;
     }
   };
 

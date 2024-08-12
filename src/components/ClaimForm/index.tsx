@@ -44,13 +44,12 @@ const ClaimForm = () => {
       setValidV3Address(true);
       getClaimTxHash(v4Address).then(async (res: string | null) => {
         if (res) {
-        // if (!res) {
           setClaimError("");
           setClaimedTxHash(res || "");
           setClaimableBalance(null);
         } else {
           await claimApi.getBalance(v3Address).then((res: BN) => {
-            if (res > new BN(ethers.parseEther("1").toString())) {
+            if (res >= new BN(ethers.parseEther("1").toString())) {
               setClaimError("");
               setClaimedTxHash("");
               setClaimableBalance(ethers.formatEther(res.toString()));
@@ -88,7 +87,7 @@ const ClaimForm = () => {
     claimApi.claim(v3Address, v4Address, signedMessage, postFix).then(async (res: any) => {
       showLoader(false, "");
       setSignatureError(null);
-      if (res.success) {
+      if (res.status) {
         setClaimSuccess(true);
         await checkForBalance();
         toast.success(MESSAGES.claimSuccess);
@@ -108,7 +107,7 @@ const ClaimForm = () => {
     .catch((err: any) => {
       showLoader(false, "");
       console.log("[ERROR] Err", err);
-      handleErrorMsg(err, "Couldn't claim DMD, please try again later");
+      handleErrorMsg(err, "Couldn't claim, please try again later");
     });
   };
 
