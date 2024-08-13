@@ -1,5 +1,6 @@
 {
   "name": "diamond-dapp-claiming",
+  "homepage": "claiming",
   "version": "0.1.0",
   "private": true,
   "dependencies": {
