@@ -27,6 +27,7 @@ const ClaimForm = () => {
   const [claimableBalance, setClaimableBalance] = useState<string | null>();
   const [validV3Address, setValidV3Address] = useState<boolean | null>(null);
   const [validV4Address, setValidV4Address] = useState<boolean | null>(null);
+  const [claimMessagePrefix, setClaimMessagePrefix] = useState<string>(process.env.REACT_APP_CLAIM_MESSAGE_PREFIX + v4Address);
 
   useEffect(() => {
     try {
@@ -81,7 +82,7 @@ const ClaimForm = () => {
     if (!ensureWalletConnection()) return;
 
     showLoader(true, "Claiming... 💎");
-    const postFix = signedMessage.split(v4Address)[1] || "";
+    const postFix = claimMessagePrefix.split(v4Address)[1].trim() || "";
 
     claimApi.claim(v3Address, v4Address, signedMessage, postFix).then(async (res: any) => {
       showLoader(false, "");
@@ -111,18 +112,8 @@ const ClaimForm = () => {
   };
 
   const copyToClipboard = () => {
-    const claimMessagePrefix = document.getElementById("claimMessagePrefix") as HTMLInputElement | HTMLTextAreaElement | null;
-    if (claimMessagePrefix) {
-
-      claimMessagePrefix.select();
-      // For mobile devices
-      claimMessagePrefix.setSelectionRange(0, 99999);
-
-      // Copy the text inside the text field
-      navigator.clipboard.writeText(claimMessagePrefix.placeholder);
-
-      toast.success(MESSAGES.copiedToClipboard);
-    }
+    navigator.clipboard.writeText(claimMessagePrefix);
+    toast.success(MESSAGES.copiedToClipboard);
   };
 
   const handleV4AddressChange = (e: any) => {
@@ -137,12 +128,14 @@ const ClaimForm = () => {
     }
 
     setV4Address(e.target.value);
+    setClaimMessagePrefix(process.env.REACT_APP_CLAIM_MESSAGE_PREFIX + e.target.value);
   }
 
   const handleSignatureChange = async (newVal: any) => {
     try {
       const prefixString = await claimApi.prefixString();
-      const postFix = signedMessage.split(v4Address)[1] || "";
+      const postFix = claimMessagePrefix.split(v4Address)[1].trim() || "";
+
       claimApi.cryptoJS.getPublicKeyFromSignature(
         newVal,
         prefixString + v4Address + postFix,
@@ -244,8 +237,8 @@ const ClaimForm = () => {
           <div className={styles.inputContainer}>
             <textarea
               id="claimMessagePrefix"
-              // value={process.env.REACT_APP_CLAIM_MESSAGE_PREFIX + v4Address}
-              placeholder={process.env.REACT_APP_CLAIM_MESSAGE_PREFIX + v4Address}
+              value={claimMessagePrefix}
+              onChange={(e) => setClaimMessagePrefix(e.target.value)}
             />
             <button
               type="button"

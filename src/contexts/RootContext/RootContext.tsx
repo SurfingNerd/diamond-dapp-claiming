@@ -63,7 +63,7 @@ const RootContextProvider: React.FC<ContextProviderProps> = ({ children }) => {
 
   const connectWallet = async (): Promise<any> => {
     try {
-        const chainId = process.env.REACT_APP_CHAIN_ID || 777012;
+        const chainId = process.env.REACT_APP_CHAIN_ID || 777017;
         let chainIdHex = ethers.toBeHex(chainId);
         chainIdHex = chainIdHex.slice(0, 2) + chainIdHex.slice(3);
         const url = process.env.REACT_APP_RPC_URL || "http://localhost:8545";
@@ -103,36 +103,33 @@ const RootContextProvider: React.FC<ContextProviderProps> = ({ children }) => {
         const provider = new ethers.BrowserProvider(web3ModalInstance);
 
         // force user to change to DMD network
-        const currentChainId = await web3ModalInstance.request({ method: 'eth_chainId' });
-
-        if (parseInt(currentChainId, 16) !== chainId) {
-            try {
-                await web3ModalInstance.request({
-                    method: "wallet_switchEthereumChain",
-                    params: [{ chainId: chainIdHex }],
-                });
-            } catch (err: any) {
-                if (err.code === 4902) {
-                    await web3ModalInstance.request({
-                        method: "wallet_addEthereumChain",
-                        params: [
-                            {
-                                chainName: "DMD",
-                                chainId: chainIdHex,
-                                nativeCurrency: {
-                                    name: "DMD",
-                                    decimals: 18,
-                                    symbol: "DMD",
-                                },
-                                rpcUrls: [url],
-                            },
-                        ],
-                    });
-                } else {
-                    console.error("[Wallet Connect] Other Error", err);
-                    return undefined;
-                }
+        if (await web3ModalInstance.request({ method: 'eth_chainId' }) !== chainIdHex) {
+          try {
+            await web3ModalInstance.request({
+              method: "wallet_switchEthereumChain",
+              params: [{ chainId: chainIdHex }],
+            });
+          } catch (err: any) {
+            console.log(err)
+            if (err.code === 4902) {
+              await web3ModalInstance.request({
+                method: "wallet_addEthereumChain",
+                params: [
+                  {
+                    chainName: process.env.REACT_APP_CHAIN_NAME || "DMD Diamond",
+                    chainId: chainIdHex,
+                    nativeCurrency: { name: "DMD", decimals: 18, symbol: "DMD" },
+                    rpcUrls: [url],
+                    blockExplorerUrls: [process.env.REACT_APP_EXPLORER_TX_URL?.split("tx/") || 'https://explorer.uniq.diamonds'],
+                  },
+                ],
+                
+              });
+            } else {
+              console.error("[Wallet Connect] Other Error", err);
+              return undefined;
             }
+          }
         }
 
         const walletAddress = (await web3ModalInstance.request({ method: 'eth_requestAccounts' }))[0];
