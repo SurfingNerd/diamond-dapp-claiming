@@ -32,7 +32,6 @@ const ClaimForm = () => {
   useEffect(() => {
     try {
       if (!v3Address || v3Address.length !== 34) return;
-      console.log("[INFO] Checking balance...");
       checkForBalance();
     } catch (e) {}
   }, [v3Address]);
