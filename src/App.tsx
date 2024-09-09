@@ -2,6 +2,7 @@ import './app.css';
 import { useEffect } from 'react';
 import Navbar from './components/NavBar';
 import ClaimForm from './components/ClaimForm';
+import ClaimForm2 from './components/ClaimForm2';
 
 function App() {
   useEffect(() => {
@@ -33,7 +34,7 @@ function App() {
         <div className="body-bg"></div>
         <div id="body-bg-glow" className="body-bg-glow"></div>
         <h1>Claim your V4 DMD coins</h1>
-        <ClaimForm />
+        <ClaimForm2 />
       </div>
     </>
   );
