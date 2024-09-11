@@ -24,3 +24,5 @@ yarn-error.log*
 
 test.html
 todo
+
+package-lock.json
