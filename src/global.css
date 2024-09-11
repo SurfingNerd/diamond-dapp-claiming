@@ -158,7 +158,7 @@ form input:focus {
     align-self: end;
     cursor: pointer;
     min-height: 45px;
-    max-width: 150px;
+    max-width: 180px;
     font-weight: 500;
     padding: 12px 24px;
     border-radius: 5px;
@@ -218,7 +218,7 @@ form input:focus {
 }
 
 .text-success {
-    color: #00ff00;
+    color: #00cc00;
 }
 
 .textarea-container {

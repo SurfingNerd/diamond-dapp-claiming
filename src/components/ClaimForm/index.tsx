@@ -169,7 +169,7 @@ const DmdDiamondClaiming = () => {
   return (
     <div className={darkMode ? 'dark' : 'light'}>
       <div className="navbar">
-        <a href="#">
+        <a href={process.env.REACT_APP_WIKI_URL || "#"} target="_blank">
           User Guide: <strong>How to claim <span className="diamond">💎</span></strong>
         </a>
         <div className="btnsContainer">
@@ -182,10 +182,10 @@ const DmdDiamondClaiming = () => {
 
       <div className="form-container">
         <div className="step-indicator">
-          <div className={`step ${!claimableBalance && "active"}`}></div>
+          <div className={`step active`}></div>
           <div className={`step ${claimableBalance && "active"}`}></div>
           <div className={`step ${claimableBalance && validV4Address && "active"}`}></div>
-          <div className={`step ${!claimableBalance && validV4Address && signedMessage && "active"}`}></div>
+          <div className={`step ${claimableBalance && validV4Address && signedMessage && "active"}`}></div>
         </div>
         <div className="form-content">
           <h1>Claim your V4 DMD Coins</h1>
@@ -237,7 +237,7 @@ const DmdDiamondClaiming = () => {
             )}
 
             {claimableBalance && (
-              <div>
+              <>
                 <input
                   placeholder="Please specify your v4 address"
                   onChange={(e) => handleV4AddressChange(e)}
@@ -250,7 +250,7 @@ const DmdDiamondClaiming = () => {
                     {MESSAGES.invalidV4Address}
                   </p>
                 )}
-              </div>
+              </>
             )}
 
             {validV4Address && claimableBalance && (
@@ -268,7 +268,7 @@ const DmdDiamondClaiming = () => {
             )}
 
             {validV4Address && claimableBalance && (
-              <div>
+              <>
                 <input
                   placeholder="Please provide the signature you've generated"
                   onChange={(e) => handleSignatureChange(e.target.value)}
@@ -276,7 +276,7 @@ const DmdDiamondClaiming = () => {
                 />
 
                 <p className="text-error">{signatureError}</p>
-              </div>
+              </>
             )}
 
             {validV4Address && claimableBalance && signedMessage && (
