@@ -51,7 +51,7 @@ const DmdDiamondClaiming = () => {
           setClaimableBalance(null);
         } else {
           await claimApi.getBalance(v3Address).then((res: BN) => {
-            if (res >= new BN(ethers.parseEther("1").toString())) {
+            if (res >= new BN(ethers.parseEther("0").toString())) {
               setClaimError("");
               setClaimedTxHash("");
               setClaimableBalance(ethers.formatEther(res.toString()));

@@ -159,7 +159,7 @@ const RootContextProvider: React.FC<ContextProviderProps> = ({ children }) => {
 
   const ensureWalletConnection = (): boolean => {
     if (!account) {
-      toast.warn("Please connect your wallet to procced.");
+      toast.warn("Please connect your wallet to proceed.");
       return false;
     }
     return true;
