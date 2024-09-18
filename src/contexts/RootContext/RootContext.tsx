@@ -110,7 +110,6 @@ const RootContextProvider: React.FC<ContextProviderProps> = ({ children }) => {
               params: [{ chainId: chainIdHex }],
             });
           } catch (err: any) {
-            console.log(err)
             if (err.code === 4902) {
               await web3ModalInstance.request({
                 method: "wallet_addEthereumChain",
@@ -120,7 +119,7 @@ const RootContextProvider: React.FC<ContextProviderProps> = ({ children }) => {
                     chainId: chainIdHex,
                     nativeCurrency: { name: "DMD", decimals: 18, symbol: "DMD" },
                     rpcUrls: [url],
-                    blockExplorerUrls: [process.env.REACT_APP_EXPLORER_TX_URL?.split("tx/") || 'https://explorer.uniq.diamonds'],
+                    blockExplorerUrls: null,
                   },
                 ],
                 
