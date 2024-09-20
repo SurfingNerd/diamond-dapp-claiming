@@ -84,7 +84,7 @@ const DmdDiamondClaiming = () => {
     if (!ensureWalletConnection()) return;
 
     showLoader(true, "Claiming... 💎");
-    const postFix = claimMessagePrefix.split(v4Address)[1].trim() || "";
+    const postFix = claimMessagePrefix.split(v4Address)[1] || "";
 
     claimApi.claim(v3Address, v4Address, signedMessage, postFix).then(async (res: any) => {
       showLoader(false, "");
@@ -131,7 +131,7 @@ const DmdDiamondClaiming = () => {
   const handleSignatureChange = async (newVal: any) => {
     try {
       const prefixString = await claimApi.prefixString();
-      const postFix = claimMessagePrefix.split(v4Address)[1].trim() || "";
+      const postFix = claimMessagePrefix.split(v4Address)[1] || "";
 
       claimApi.cryptoJS.getPublicKeyFromSignature(
         newVal,
