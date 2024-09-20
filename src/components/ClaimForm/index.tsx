@@ -1,5 +1,6 @@
 import BN from "bn.js";
 import { ethers } from "ethers";
+import copy from 'copy-to-clipboard';
 import { toast } from 'react-toastify';
 import { MESSAGES } from "../../constants/messages";  
 import { useEffect, useRef, useState } from "react";
@@ -162,7 +163,7 @@ const DmdDiamondClaiming = () => {
   };
 
   const copyText = () => {
-    navigator.clipboard.writeText(claimMessagePrefix);
+    copy(claimMessagePrefix);
     toast.success(MESSAGES.copiedToClipboard);
   };
 

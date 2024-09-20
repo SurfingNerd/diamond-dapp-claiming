@@ -20,6 +20,7 @@
     "bitcoinjs-message": "^2.2.0",
     "bn.js": "^5.2.1",
     "bs58check": "^3.0.1",
+    "copy-to-clipboard": "^3.3.3",
     "crypto": "^1.0.1",
     "crypto-browserify": "^3.12.0",
     "diamond-contracts-claiming": "github:MSalman6/diamond-contracts-claiming#for-ui",
