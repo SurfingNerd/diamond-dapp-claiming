@@ -3,6 +3,7 @@
   "version": "0.1.0",
   "private": true,
   "dependencies": {
+    "@ethersproject/abstract-provider": "^5.7.0",
     "@reduxjs/toolkit": "^1.9.1",
     "@testing-library/jest-dom": "^5.16.5",
     "@testing-library/react": "^13.4.0",
@@ -11,14 +12,18 @@
     "@types/node": "^16.18.11",
     "@types/react": "^18.0.27",
     "@types/react-dom": "^18.0.10",
+    "@walletconnect/client": "^1.8.0",
+    "@walletconnect/web3-provider": "^1.8.0",
     "@web3modal/wagmi": "^3.5.6",
     "base58check": "^2.0.0",
     "bitcoinjs-lib": "^6.1.5",
     "bitcoinjs-message": "^2.2.0",
     "bn.js": "^5.2.1",
     "bs58check": "^3.0.1",
+    "copy-to-clipboard": "^3.3.3",
     "crypto": "^1.0.1",
     "crypto-browserify": "^3.12.0",
+    "diamond-contracts-claiming": "github:MSalman6/diamond-contracts-claiming#for-ui",
     "elliptic": "^6.5.5",
     "ethers": "^6.12.0",
     "node-polyfill-webpack-plugin": "^3.0.0",
@@ -39,7 +44,8 @@
     "start": "react-app-rewired start",
     "build": "react-app-rewired build",
     "test": "react-app-rewired test",
-    "eject": "react-app-rewired eject"
+    "eject": "react-app-rewired eject",
+    "clean-install": "rm -f package-lock.json && rm -rf node_modules/diamond-contracts-claiming && npm install"
   },
   "eslintConfig": {
     "extends": [
@@ -64,5 +70,8 @@
     "@types/elliptic": "^6.4.18",
     "@types/secp256k1": "^4.0.6",
     "react-app-rewired": "^2.2.1"
+  },
+  "overrides": {
+    "typescript": "^5.4.5"
   }
 }

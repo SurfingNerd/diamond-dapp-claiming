@@ -3,10 +3,10 @@ import Web3Modal from "web3modal";
 import { toast } from 'react-toastify';
 import Loader from '../../components/Loader';
 import { ContextProviderProps } from "./types";
-import claimAbi from '../../abis/claimAbi.json';
-import { walletConnectProvider } from "@web3modal/wagmi";
+import { Log } from '@ethersproject/abstract-provider';
+import { CryptoSol } from 'diamond-contracts-claiming/dist/api/src/cryptoSol';
 import React, { createContext, useContext, useEffect, useState } from "react";
-import { DMDClaimingAPI } from '../../utils';
+import ClaimContract from 'diamond-contracts-claiming/artifacts/contracts/ClaimContract.sol/ClaimContract.json';
 
 interface RootContextProps {
   provider: any,
@@ -15,8 +15,10 @@ interface RootContextProps {
   rootInitialized: boolean,
 
   ensureWalletConnection: () => boolean,
+  handleErrorMsg: (err: Error, alternateMsg: string) => void,
   showLoader: (loading: boolean, loadingMsg: string) => void,
   connectWallet: () => Promise<{ provider: any } | undefined>,
+  getClaimTxHash: (v3Address: string) => Promise<string | null>,
 }
 
 const RootContext = createContext<RootContextProps | undefined>(undefined);
@@ -28,7 +30,7 @@ const RootContextProvider: React.FC<ContextProviderProps> = ({ children }) => {
   const [claimContract, setClaimContract] = useState<any>(null);
   const [loadingMessage, setLoadingMessage] = useState<string>("");
   const [rootInitialized, setRootInitialized] = useState<boolean>(false);
-  const [provider, setProvider] = useState<any>(new ethers.JsonRpcProvider("https://rpc.uniq.diamonds"));
+  const [provider, setProvider] = useState<any>(new ethers.JsonRpcProvider(process.env.REACT_APP_RPC_URL));
 
   useEffect(() => {
     console.log("[INFO] Initializing Root Context");
@@ -47,28 +49,36 @@ const RootContextProvider: React.FC<ContextProviderProps> = ({ children }) => {
 
     getClaimContract().then((contract: any) => {
       setClaimContract(contract);
-      setClaimApi(new DMDClaimingAPI(contract));
+      setClaimApi(new CryptoSol(contract));
     });
+  }
+
+  const handleErrorMsg = (err: Error, alternateMsg: string) => {
+    if (err.message && !err.message.includes("EVM") && (err.message.includes("MetaMask") || err.message.includes("rejected"))) {
+      toast.error("Transaction rejected by user.");
+    } else {
+      toast.error(alternateMsg);
+    }
   }
 
   const connectWallet = async (): Promise<any> => {
     try {
-        const chainId = 777012;
+        const chainId = process.env.REACT_APP_CHAIN_ID || 777017;
         let chainIdHex = ethers.toBeHex(chainId);
         chainIdHex = chainIdHex.slice(0, 2) + chainIdHex.slice(3);
-        const url = "https://rpc.uniq.diamonds";
+        const url = process.env.REACT_APP_RPC_URL || "http://localhost:8545";
         const chainOptions: { [key: number]: string } = {
             [chainId]: url,
         };
 
         const providerOptions: any = {
-            walletconnect: {
-                package: walletConnectProvider,
-                options: {
-                    chainId,
-                    rpc: chainOptions,
-                },
-            },
+            // walletconnect: {
+            //     package: walletConnectProvider,
+            //     options: {
+            //         chainId,
+            //         rpc: chainOptions,
+            //     },
+            // },
         };
 
         const web3Modal = new Web3Modal({
@@ -93,36 +103,32 @@ const RootContextProvider: React.FC<ContextProviderProps> = ({ children }) => {
         const provider = new ethers.BrowserProvider(web3ModalInstance);
 
         // force user to change to DMD network
-        const currentChainId = await web3ModalInstance.request({ method: 'eth_chainId' });
-
-        if (parseInt(currentChainId, 16) !== chainId) {
-            try {
-                await web3ModalInstance.request({
-                    method: "wallet_switchEthereumChain",
-                    params: [{ chainId: chainIdHex }],
-                });
-            } catch (err: any) {
-                if (err.code === 4902) {
-                    await web3ModalInstance.request({
-                        method: "wallet_addEthereumChain",
-                        params: [
-                            {
-                                chainName: "DMD",
-                                chainId: chainIdHex,
-                                nativeCurrency: {
-                                    name: "DMD",
-                                    decimals: 18,
-                                    symbol: "DMD",
-                                },
-                                rpcUrls: [url],
-                            },
-                        ],
-                    });
-                } else {
-                    console.error("[Wallet Connect] Other Error", err);
-                    return undefined;
-                }
+        if (await web3ModalInstance.request({ method: 'eth_chainId' }) !== chainIdHex) {
+          try {
+            await web3ModalInstance.request({
+              method: "wallet_switchEthereumChain",
+              params: [{ chainId: chainIdHex }],
+            });
+          } catch (err: any) {
+            if (err.code === 4902) {
+              await web3ModalInstance.request({
+                method: "wallet_addEthereumChain",
+                params: [
+                  {
+                    chainName: process.env.REACT_APP_CHAIN_NAME || "DMD Diamond",
+                    chainId: chainIdHex,
+                    nativeCurrency: { name: "DMD", decimals: 18, symbol: "DMD" },
+                    rpcUrls: [url],
+                    blockExplorerUrls: null,
+                  },
+                ],
+                
+              });
+            } else {
+              console.error("[Wallet Connect] Other Error", err);
+              return undefined;
             }
+          }
         }
 
         const walletAddress = (await web3ModalInstance.request({ method: 'eth_requestAccounts' }))[0];
@@ -138,7 +144,7 @@ const RootContextProvider: React.FC<ContextProviderProps> = ({ children }) => {
 
   const getClaimContract = async () => {
     let signer;
-    const contractAddress = process.env.contractAddress || '0x775A61Ce1D94936829e210839650b893000bE15a';
+    const contractAddress = process.env.REACT_APP_CLAIMING_CONTRACT || '0xCAFa71b474541D1676093866088ccA4AB9a07722';
 
     try {
       signer = await provider.getSigner(0);
@@ -146,18 +152,42 @@ const RootContextProvider: React.FC<ContextProviderProps> = ({ children }) => {
     
     return new ethers.Contract(
       contractAddress, 
-      claimAbi,
+      ClaimContract.abi,
       signer ? signer : provider
     );
   }
 
   const ensureWalletConnection = (): boolean => {
     if (!account) {
-      toast.warn("Please connect your wallet first");
+      toast.warn("Please connect your wallet to proceed.");
       return false;
     }
     return true;
   }
+
+  const getClaimTxHash = async (v4Address: string): Promise<string | null> => {
+    try {
+        let eventFilter = claimContract.filters.Claim(v4Address);
+        let logs: Log[] = await claimContract.queryFilter(eventFilter, Number(process.env.REACT_APP_CONTRACT_DEPLOY_BLOCK || 0));
+
+        if (logs.length === 0) {
+          return null;
+        } else {
+          const iface = new ethers.Interface(ClaimContract.abi);
+          const latestLogs = logs
+          .map((log) => {
+            const parsedLog = iface.parseLog(log) as any;
+            return {args: parsedLog.args, transactionHash: log.transactionHash};
+
+          })
+          .filter((parsedLog) => parsedLog?.args[0] === v4Address) as any;
+          return latestLogs.length > 0 ? latestLogs[latestLogs.length - 1].transactionHash : null;
+        }
+    } catch (error) {
+      console.log(error);
+      return null;
+    }
+  };
 
   const contextValue = {
     account,
@@ -166,6 +196,8 @@ const RootContextProvider: React.FC<ContextProviderProps> = ({ children }) => {
     rootInitialized,
     
     ensureWalletConnection,
+    handleErrorMsg,
+    getClaimTxHash,
     connectWallet,
     showLoader
   };
